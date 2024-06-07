@@ -1,6 +1,7 @@
 import app from "./app";
 
-Bun.serve({
+const server = Bun.serve({
+  port: process.env.PORT || 3000,
   fetch: app.fetch,
 });
-console.log("Hello via Bun!");
+console.log("Hello via Bun!", server.port);
