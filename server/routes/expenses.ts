@@ -2,7 +2,6 @@ import { zValidator } from "@hono/zod-validator";
 import { Hono } from "hono";
 import { z } from "zod";
 
-
 const expenseSchema = z.object({
   id: z.number().int().positive().min(1),
   title: z.string().min(3).max(100),
@@ -40,8 +39,13 @@ export const expensesRoute = new Hono()
     fakeExpenses.push({ ...expense, id: fakeExpenses.length + 1 });
     c.status(201);
     return c.json(expense);
-  }).get("/total-spent", (c) => {
-    const total = fakeExpenses.reduce((total, expense) => total + expense.amount, 0);
+  })
+  .get("/total-spent", async (c) => {
+    // await new Promise((resolve) => setTimeout(resolve, 3000));
+    const total = fakeExpenses.reduce(
+      (total, expense) => total + expense.amount,
+      0
+    );
     return c.json({ total });
   })
   .get("/:id{[0-9]+}", (c) => {
