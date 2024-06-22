@@ -7,7 +7,7 @@ import { useForm } from "@tanstack/react-form";
 import { api } from "@/lib/api";
 // import type { FieldApi } from "@tanstack/react-form";
 
-export const Route = createFileRoute("/create-expense")({
+export const Route = createFileRoute("/_authenticated/create-expense")({
   component: CreateExpense,
 });
 

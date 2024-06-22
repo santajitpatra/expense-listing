@@ -29,6 +29,6 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true
   },
-  "include": ["src"],
+  "include": ["src", "src/routes/_authenticated/index.tsx", "src/routes/_authenticated/expenses.tsx", "src/routes/_authenticated/create-expense.tsx", "src/routes/_authenticated/profile.tsx"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }
