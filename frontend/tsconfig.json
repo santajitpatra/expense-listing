@@ -1,13 +1,10 @@
 {
   "compilerOptions": {
-      "baseUrl": ".",
+    "sourceMap": true,
+    "baseUrl": ".",
     "paths": {
-      "@/*": [
-        "./src/*"
-      ],
-      "@server/*": [
-        "../server/*"
-      ]
+      "@/*": ["./src/*"],
+      "@server/*": ["../server/*"]
     },
     "target": "ES2020",
     "useDefineForClassFields": true,
@@ -29,6 +26,12 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true
   },
-  "include": ["src", "src/routes/_authenticated/index.tsx", "src/routes/_authenticated/expenses.tsx", "src/routes/_authenticated/create-expense.tsx", "src/routes/_authenticated/profile.tsx"],
+  "include": [
+    "src",
+    "src/routes/_authenticated/index.tsx",
+    "src/routes/_authenticated/expenses.tsx",
+    "src/routes/_authenticated/create-expense.tsx",
+    "src/routes/_authenticated/profile.tsx"
+  ],
   "references": [{ "path": "./tsconfig.node.json" }]
 }
