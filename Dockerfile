@@ -23,8 +23,19 @@ RUN apt-get update -qq && \
 COPY --link bun.lockb package.json ./
 RUN bun install --ci
 
+# Install frontend dependencies
+COPY --link frontend/bun.lockb frontend/package.json ./frontend/
+RUN cd frontend && bun install --ci
+
 # copy source code
 COPY --link . .
+
+#Change directory to frontend
+WORKDIR /app/frontend
+RUN bun run build
+
+#Change directory to backend
+RUN find . -mindepth 1 ! -regex '^./dist\(/.*\)?' -delete
 
 # build the app
 FROM base
