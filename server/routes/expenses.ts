@@ -3,10 +3,14 @@ import { Hono } from "hono";
 import { z } from "zod";
 import { getUser } from "../kinde";
 
+import { db } from "../db";
+import { expenses as expenseTable } from "../schema/expenses";
+import { eq } from "drizzle-orm";
+
 const expenseSchema = z.object({
   id: z.number().int().positive().min(1),
   title: z.string().min(3).max(100),
-  amount: z.number().int().positive(),
+  amount: z.string(),
 });
 
 type Expense = z.infer<typeof expenseSchema>;
@@ -17,35 +21,49 @@ const fakeExpenses: Expense[] = [
   {
     id: 1,
     title: "Groceries",
-    amount: 100,
+    amount: "100",
   },
   {
     id: 2,
     title: "Rents",
-    amount: 1000,
+    amount: "1000",
   },
   {
     id: 3,
     title: "Gass",
-    amount: 200,
+    amount: "200",
   },
 ];
 
 export const expensesRoute = new Hono()
   .get("/", getUser, async (c) => {
     const user = await c.var.user;
-    return c.json({ expenses: fakeExpenses });
+    const expenses = await db
+      .select()
+      .from(expenseTable)
+      .where(eq(expenseTable.userId, user.id));
+
+    return c.json({ expenses: expenses });
   })
   .post("/", getUser, zValidator("json", createPostSchema), async (c) => {
     const expense = await c.req.valid("json");
-    fakeExpenses.push({ ...expense, id: fakeExpenses.length + 1 });
+    const user = await c.var.user;
+
+    const result = await db
+      .insert(expenseTable)
+      .values({
+        ...expense,
+        userId: user.id,
+      })
+      .returning();
+
     c.status(201);
-    return c.json(expense);
+    return c.json(result);
   })
   .get("/total-spent", getUser, async (c) => {
     // await new Promise((resolve) => setTimeout(resolve, 3000));
     const total = fakeExpenses.reduce(
-      (total, expense) => total + expense.amount,
+      (total, expense) => total + +expense.amount,
       0
     );
     return c.json({ total });
