@@ -7,15 +7,9 @@ import { db } from "../db";
 import { expenses as expenseTable } from "../db/schema/expenses";
 import { and, desc, eq, sum } from "drizzle-orm";
 
-const expenseSchema = z.object({
-  id: z.number().int().positive().min(1),
-  title: z.string().min(3).max(100),
-  amount: z.string(),
-});
+import { createPostSchema } from "../sharedTypes";
 
-type Expense = z.infer<typeof expenseSchema>;
 
-const createPostSchema = expenseSchema.omit({ id: true });
 
 export const expensesRoute = new Hono()
   .get("/", getUser, async (c) => {

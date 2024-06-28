@@ -7,6 +7,9 @@ import { useForm } from "@tanstack/react-form";
 import { api } from "@/lib/api";
 // import type { FieldApi } from "@tanstack/react-form";
 
+import { zodValidator } from "@tanstack/zod-form-adapter";
+import { createPostSchema } from "@server/sharedTypes";
+
 export const Route = createFileRoute("/_authenticated/create-expense")({
   component: CreateExpense,
 });
@@ -14,6 +17,7 @@ export const Route = createFileRoute("/_authenticated/create-expense")({
 function CreateExpense() {
   const navigate = useNavigate();
   const form = useForm({
+    validatorAdapter: zodValidator(),
     defaultValues: {
       title: "",
       amount: "0",
@@ -42,6 +46,9 @@ function CreateExpense() {
       >
         <form.Field
           name="title"
+          validators={{
+            onChange: createPostSchema.shape.title,
+          }}
           children={(field) => (
             <>
               <Label htmlFor={field.name}>Title</Label>
@@ -60,6 +67,9 @@ function CreateExpense() {
 
         <form.Field
           name="amount"
+          validators={{
+            onChange: createPostSchema.shape.amount,
+          }}
           children={(field) => (
             <>
               <Label htmlFor={field.name}>Amount</Label>
