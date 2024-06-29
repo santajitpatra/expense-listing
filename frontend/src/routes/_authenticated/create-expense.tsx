@@ -8,7 +8,7 @@ import { api } from "@/lib/api";
 // import type { FieldApi } from "@tanstack/react-form";
 
 import { zodValidator } from "@tanstack/zod-form-adapter";
-import { createPostSchema } from "@server/sharedTypes";
+import { createExpenseSchema } from "@server/sharedTypes";
 
 export const Route = createFileRoute("/_authenticated/create-expense")({
   component: CreateExpense,
@@ -37,7 +37,7 @@ function CreateExpense() {
     <div className="p-2">
       <h2>Create Expense</h2>
       <form
-        className="max-w-xl m-auto"
+        className="flex flex-col gap-y-4 max-w-xl m-auto"
         onSubmit={(e) => {
           e.preventDefault();
           e.stopPropagation();
@@ -47,10 +47,10 @@ function CreateExpense() {
         <form.Field
           name="title"
           validators={{
-            onChange: createPostSchema.shape.title,
+            onChange: createExpenseSchema.shape.title,
           }}
           children={(field) => (
-            <>
+            <div>
               <Label htmlFor={field.name}>Title</Label>
               <Input
                 name={field.name}
@@ -61,17 +61,17 @@ function CreateExpense() {
               {field.state.meta.touchedErrors ? (
                 <em>{field.state.meta.touchedErrors}</em>
               ) : null}
-            </>
+            </div>
           )}
         />
 
         <form.Field
           name="amount"
           validators={{
-            onChange: createPostSchema.shape.amount,
+            onChange: createExpenseSchema.shape.amount,
           }}
           children={(field) => (
-            <>
+            <div>
               <Label htmlFor={field.name}>Amount</Label>
               <Input
                 name={field.name}
@@ -83,7 +83,7 @@ function CreateExpense() {
               {field.state.meta.touchedErrors ? (
                 <em>{field.state.meta.touchedErrors}</em>
               ) : null}
-            </>
+            </div>
           )}
         />
         <form.Subscribe
