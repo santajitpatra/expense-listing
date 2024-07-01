@@ -11,8 +11,6 @@ import {
 import { and, desc, eq, sum } from "drizzle-orm";
 import { createExpenseSchema } from "../sharedTypes";
 
-
-
 export const expensesRoute = new Hono()
   .get("/", getUser, async (c) => {
     const user = await c.var.user;
@@ -37,7 +35,8 @@ export const expensesRoute = new Hono()
     const result = await db
       .insert(expenseTable)
       .values(validatedExpense)
-      .returning();
+      .returning()
+      .then((res) => res[0]);
 
     c.status(201);
     return c.json(result);
