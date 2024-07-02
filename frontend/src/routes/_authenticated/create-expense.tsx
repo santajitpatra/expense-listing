@@ -4,13 +4,20 @@ import { Label } from "@/components/ui/label";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 
 import { useForm } from "@tanstack/react-form";
-import { api, getAllExpensesQueryOptions } from "@/lib/api";
+import {
+  createExpense,
+  getAllExpensesQueryOptions,
+  loadingCreateExpenseQueryOptions,
+} from "@/lib/api";
 // import type { FieldApi } from "@tanstack/react-form";
 
 import { zodValidator } from "@tanstack/zod-form-adapter";
 import { createExpenseSchema } from "@server/sharedTypes";
 import { Calendar } from "@/components/ui/calendar";
 import { useQueryClient } from "@tanstack/react-query";
+
+import { toast } from "sonner";
+
 
 export const Route = createFileRoute("/_authenticated/create-expense")({
   component: CreateExpense,
@@ -27,22 +34,37 @@ function CreateExpense() {
       date: new Date().toISOString(),
     },
     onSubmit: async ({ value }) => {
-   const existingExpenses = await queryClient.ensureQueryData(
-     getAllExpensesQueryOptions
-   );
-      const response = await api.expenses.$post({ json: value });
-      if (!response.ok) {
-        throw new Error("Failed to create expense");
-      }
-      // Refetch the user query
-      const newExpense = await response.json();
-      queryClient.setQueryData(getAllExpensesQueryOptions.queryKey, {
-        ...existingExpenses,
-        expenses: [newExpense,...existingExpenses.expenses],
-      });
+      const existingExpenses = await queryClient.ensureQueryData(
+        getAllExpensesQueryOptions
+      );
 
       // Redirect to the list of expenses
       navigate({ to: "/expenses" });
+
+      // loading state
+      queryClient.setQueryData(loadingCreateExpenseQueryOptions.queryKey, {
+        expense: value,
+      });
+
+      try {
+        const newExpense = await createExpense({ value });
+
+        queryClient.setQueryData(getAllExpensesQueryOptions.queryKey, {
+          ...existingExpenses,
+          expenses: [newExpense, ...existingExpenses.expenses],
+        });
+
+         toast("Created expense", {
+           description: `Successfully created expense ${newExpense.id}`,
+         });
+        // success state
+      } catch (error) {
+        toast("Failed to create expense", {
+          description: "Please try again",
+        });
+      } finally {
+        queryClient.setQueryData(loadingCreateExpenseQueryOptions.queryKey, {});
+      }
     },
   });
   return (
