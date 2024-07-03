@@ -58,3 +58,14 @@ export const loadingCreateExpenseQueryOptions = queryOptions<{
   },
   staleTime: Infinity,
 });
+
+export async function deleteExpense({ id }: { id: number }) {
+  await new Promise((resolve) => setTimeout(resolve, 3000));
+
+  const response = await api.expenses[":id{[0-9]+}"].$delete({
+    param: { id: id.toString() },
+  });
+  if (!response.ok) {
+    throw new Error("Failed to delete expense");
+  }
+}
